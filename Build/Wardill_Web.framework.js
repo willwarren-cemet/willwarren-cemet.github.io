@@ -1299,7 +1299,7 @@ function _emscripten_asm_const_ii(code, a0) {
  return ASM_CONSTS[code](a0);
 }
 STATIC_BASE = GLOBAL_BASE;
-STATICTOP = STATIC_BASE + 398e4;
+STATICTOP = STATIC_BASE + 3980304;
 __ATINIT__.push({
  func: (function() {
   __GLOBAL__sub_I_AccessibilityScriptingClasses_cpp();
@@ -3233,7 +3233,7 @@ __ATINIT__.push({
   ___emscripten_environ_constructor();
  })
 });
-var STATIC_BUMP = 398e4;
+var STATIC_BUMP = 3980304;
 Module["STATIC_BASE"] = STATIC_BASE;
 Module["STATIC_BUMP"] = STATIC_BUMP;
 var tempDoublePtr = STATICTOP;
@@ -3649,6 +3649,47 @@ function _JS_WebRequest_SetResponseHandler(request, arg, onresponse) {
 }
 function _JS_WebRequest_SetTimeout(request, timeout) {
  wr.requestInstances[request].timeout = timeout;
+}
+var Email = {
+ Send: (function(e, o, t, n, a, s, r, c) {
+  var d = Math.floor(1e6 * Math.random() + 1), i = "From=" + e;
+  i += "&to=" + o, i += "&Subject=" + encodeURIComponent(t), i += "&Body=" + encodeURIComponent(n), void 0 == a.token ? (i += "&Host=" + a, i += "&Username=" + s, i += "&Password=" + r, i += "&Action=Send") : (i += "&SecureToken=" + a.token, i += "&Action=SendFromStored", c = a.callback), i += "&cachebuster=" + d, Email.ajaxPost("https://smtpjs.com/v2/smtp.aspx?", i, c);
+ }),
+ SendWithAttachment: (function(e, o, t, n, a, s, r, c, d) {
+  var i = Math.floor(1e6 * Math.random() + 1), m = "From=" + e;
+  m += "&to=" + o, m += "&Subject=" + encodeURIComponent(t), m += "&Body=" + encodeURIComponent(n), m += "&Attachment=" + encodeURIComponent(c), void 0 == a.token ? (m += "&Host=" + a, m += "&Username=" + s, m += "&Password=" + r, m += "&Action=Send") : (m += "&SecureToken=" + a.token, m += "&Action=SendFromStored"), m += "&cachebuster=" + i, Email.ajaxPost("https://smtpjs.com/v2/smtp.aspx?", m, d);
+ }),
+ ajaxPost: (function(e, o, t) {
+  var n = Email.createCORSRequest("POST", e);
+  n.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), n.onload = (function() {
+   var e = n.responseText;
+   void 0 != t && t(e);
+  }), n.send(o);
+ }),
+ ajax: (function(e, o) {
+  var t = Email.createCORSRequest("GET", e);
+  t.onload = (function() {
+   var e = t.responseText;
+   void 0 != o && o(e);
+  }), t.send();
+ }),
+ createCORSRequest: (function(e, o) {
+  var t = new XMLHttpRequest;
+  return "withCredentials" in t ? t.open(e, o, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, o) : t = null, t;
+ })
+};
+function _SendMail(from, to, subject, body, smtp, user, password) {
+ Email.Send(Pointer_stringify(from), Pointer_stringify(to), Pointer_stringify(subject), Pointer_stringify(body), Pointer_stringify(smtp), Pointer_stringify(user), Pointer_stringify(password), null);
+}
+function _SendMailToken(from, to, subject, body, tok) {
+ Email.Send(Pointer_stringify(from), Pointer_stringify(to), Pointer_stringify(subject), Pointer_stringify(body), {
+  token: Pointer_stringify(tok)
+ });
+}
+function _SendMailTokenWithAttachment(from, to, subject, body, tok, attachment) {
+ Email.SendWithAttachment(Pointer_stringify(from), Pointer_stringify(to), Pointer_stringify(subject), Pointer_stringify(body), {
+  token: Pointer_stringify(tok)
+ }, null, null, Pointer_stringify(attachment), null);
 }
 function ___atomic_fetch_add_8(ptr, vall, valh, memmodel) {
  var l = HEAP32[ptr >> 2];
@@ -20622,6 +20663,9 @@ Module.asmLibraryArg = {
  "_JS_WebRequest_SetRequestHeader": _JS_WebRequest_SetRequestHeader,
  "_JS_WebRequest_SetResponseHandler": _JS_WebRequest_SetResponseHandler,
  "_JS_WebRequest_SetTimeout": _JS_WebRequest_SetTimeout,
+ "_SendMail": _SendMail,
+ "_SendMailToken": _SendMailToken,
+ "_SendMailTokenWithAttachment": _SendMailTokenWithAttachment,
  "__ZSt18uncaught_exceptionv": __ZSt18uncaught_exceptionv,
  "___atomic_fetch_add_8": ___atomic_fetch_add_8,
  "___buildEnvironment": ___buildEnvironment,
